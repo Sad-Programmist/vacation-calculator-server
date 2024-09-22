@@ -19,9 +19,12 @@ public class CalculatorController {
 
     @GetMapping("/calculate")
     public ResponseEntity<VacationPayDto> calculateVacation(@RequestParam double averageSalary,
+                                                            @RequestParam int vacationDays,
                                                             @RequestParam LocalDate vacationStartDate,
-                                                            @RequestParam LocalDate vacationEndDate) {
-        VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationStartDate, vacationEndDate);
+                                                            @RequestParam LocalDate vacationEndDate,
+                                                            @RequestParam boolean isSixDayWorkWeek) {
+        VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationDays, vacationStartDate,
+                vacationEndDate, isSixDayWorkWeek);
         if (vacationPayDto == null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 

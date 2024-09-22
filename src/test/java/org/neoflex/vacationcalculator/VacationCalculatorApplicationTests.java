@@ -14,88 +14,137 @@ import static org.junit.Assert.assertNull;
 @SpringBootTest
 class VacationCalculatorApplicationTests {
 
-	@Test
-	@DisplayName("Расчет отпускных за 5 дней со средней зп 10000")
-	void testVacationPay1() {
-		// Условия
-		double averageSalary = 10000;
-		LocalDate vacationStartDate = LocalDate.of(2024, 6, 10);
-		LocalDate vacationEndDate = LocalDate.of(2024, 6, 15);
+    @Test
+    @DisplayName("Стандартный случай с датами 6 дневная рабочая неделя")
+    void testSixDayWorkWeek() {
+        // Условия
+        double averageSalary = 10000;
+        int vacationDays = 10;
+        LocalDate vacationStartDate = LocalDate.of(2024, 6, 10);
+        LocalDate vacationEndDate = LocalDate.of(2024, 6, 15);
+        boolean isSixDayWorkWeek = true;
 
-		// Проведение теста
-		CalculatorService calculatorService = new CalculatorService();
-		VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationStartDate, vacationEndDate);
+        // Проведение теста
+        CalculatorService calculatorService = new CalculatorService();
+        VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationDays, vacationStartDate,
+                vacationEndDate, isSixDayWorkWeek);
 
-		// Проверка результатов
-		double expected = 2292.99;
-		double epsilon = 0.01;
-		assertEquals(expected, vacationPayDto.getVacationPay(), epsilon);
-	}
+        // Проверка результатов
+        double expected = 2292.99;
+        double epsilon = 0.01;
+        assertEquals(expected, vacationPayDto.getVacationPay(), epsilon);
+    }
 
-	@Test
-	@DisplayName("Расчет отпускных за месяц со средней зп 20000")
-	void testVacationPay2() {
-		// Условия
-		double averageSalary = 20000;
-		LocalDate vacationStartDate = LocalDate.of(2024, 6, 10);
-		LocalDate vacationEndDate = LocalDate.of(2024, 7, 15);
+    @Test
+    @DisplayName("Стандартный случай с количеством дней")
+    void testVacationDays() {
+        // Условия
+        double averageSalary = 10000;
+        int vacationDays = 10;
 
-		// Проведение теста
-		CalculatorService calculatorService = new CalculatorService();
-		VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationStartDate, vacationEndDate);
+        // Проведение теста
+        CalculatorService calculatorService = new CalculatorService();
+        VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationDays,
+                null, null, false);
 
-		// Проверка результатов
-		double expected = 27515.92;
-		double epsilon = 0.01;
-		assertEquals(expected, vacationPayDto.getVacationPay(), epsilon);
-	}
+        // Проверка результатов
+        double expected = 3412.97;
+        double epsilon = 0.01;
+        assertEquals(expected, vacationPayDto.getVacationPay(), epsilon);
+    }
 
-	@Test
-	@DisplayName("Расчет отпускных при неправильном порядке дат")
-	void testWrongDate() {
-		// Условия
-		double averageSalary = 20000;
-		LocalDate vacationStartDate = LocalDate.of(2024, 7, 10);
-		LocalDate vacationEndDate = LocalDate.of(2024, 6, 15);
+    @Test
+    @DisplayName("Отрицательное количеством дней отпуска")
+    void testNegativeVacationDays() {
+        // Условия
+        double averageSalary = 10000;
+        int vacationDays = -10;
 
-		// Проведение теста
-		CalculatorService calculatorService = new CalculatorService();
-		VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationStartDate, vacationEndDate);
+        // Проведение теста
+        CalculatorService calculatorService = new CalculatorService();
+        VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationDays,
+                null, null, false);
 
-		// Проверка результатов
-		assertNull(vacationPayDto);
-	}
+        // Проверка результатов
+        assertNull(vacationPayDto);
+    }
 
-	@Test
-	@DisplayName("Расчет отпускных при отсутствии дат")
-	void testNullDate() {
-		// Условия
-		double averageSalary = 20000;
-		LocalDate vacationStartDate = null;
-		LocalDate vacationEndDate = null;
+    @Test
+    @DisplayName("Стандартный случай с датами 5 дневная рабочая неделя")
+    void testFiveDayWorkWeek() {
+        // Условия
+        double averageSalary = 10000;
+        int vacationDays = 10;
+        LocalDate vacationStartDate = LocalDate.of(2024, 6, 10);
+        LocalDate vacationEndDate = LocalDate.of(2024, 6, 15);
+        boolean isSixDayWorkWeek = false;
 
-		// Проведение теста
-		CalculatorService calculatorService = new CalculatorService();
-		VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationStartDate, vacationEndDate);
+        // Проведение теста
+        CalculatorService calculatorService = new CalculatorService();
+        VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationDays,
+                vacationStartDate, vacationEndDate, isSixDayWorkWeek);
 
-		// Проверка результатов
-		assertNull(vacationPayDto);
-	}
+        // Проверка результатов
+        double expected = 2758.62;
+        double epsilon = 0.01;
+        assertEquals(expected, vacationPayDto.getVacationPay(), epsilon);
+    }
 
-	@Test
-	@DisplayName("Расчет отпускных с отрицательной средней зарплатой")
-	void testNegativeAverageSalary() {
-		// Условия
-		double averageSalary = -20000;
-		LocalDate vacationStartDate = LocalDate.of(2024, 6, 10);
-		LocalDate vacationEndDate = LocalDate.of(2024, 6, 15);
+    @Test
+    @DisplayName("Обратный порядок дат")
+    void testWrongDate() {
+        // Условия
+        double averageSalary = 20000;
+        int vacationDays = 10;
+        LocalDate vacationStartDate = LocalDate.of(2024, 7, 10);
+        LocalDate vacationEndDate = LocalDate.of(2024, 6, 15);
+        boolean isSixDayWorkWeek = true;
 
-		// Проведение теста
-		CalculatorService calculatorService = new CalculatorService();
-		VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationStartDate, vacationEndDate);
+        // Проведение теста
+        CalculatorService calculatorService = new CalculatorService();
+        VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationDays,
+                vacationStartDate, vacationEndDate, isSixDayWorkWeek);
 
-		// Проверка результатов
-		assertNull(vacationPayDto);
-	}
+        // Проверка результатов
+        assertNull(vacationPayDto);
+    }
+
+    @Test
+    @DisplayName("Даты отсутствуют")
+    void testNullDate() {
+        // Условия
+        double averageSalary = 20000;
+        int vacationDays = 0;
+        LocalDate vacationStartDate = null;
+        LocalDate vacationEndDate = null;
+        boolean isSixDayWorkWeek = true;
+
+        // Проведение теста
+        CalculatorService calculatorService = new CalculatorService();
+        VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationDays,
+                vacationStartDate, vacationEndDate, isSixDayWorkWeek);
+
+        // Проверка результатов
+        assertNull(vacationPayDto);
+    }
+
+    @Test
+    @DisplayName("Отрицательная средняя зарплата")
+    void testNegativeAverageSalary() {
+        // Условия
+        double averageSalary = -20000;
+        int vacationDays = 10;
+        LocalDate vacationStartDate = LocalDate.of(2024, 6, 10);
+        LocalDate vacationEndDate = LocalDate.of(2024, 6, 15);
+        boolean isSixDayWorkWeek = true;
+
+        // Проведение теста
+        CalculatorService calculatorService = new CalculatorService();
+        VacationPayDto vacationPayDto = calculatorService.calculateVacation(averageSalary, vacationDays,
+                vacationStartDate, vacationEndDate, isSixDayWorkWeek);
+
+        // Проверка результатов
+        assertNull(vacationPayDto);
+    }
 
 }
